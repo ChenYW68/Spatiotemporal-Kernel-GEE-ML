@@ -1,15 +1,7 @@
 # Load packages, functions, and environment
 library(reticulate)
-# use_condaenv("r-reticulate")
-# use_condaenv("TFv1-15", required = TRUE)
-# conda_list()
-
 stationary <- TRUE
-# source("./ML/utils.R")
-
-# Dataset 1. From nonstationary, separable covariance
-# Simulate warped location
-# set.seed(16)
+source("./ML/utils.R")
 range_s    <- 1  # c(0.1, 0.5, 1)
 range_t    <- 1   # c(0.1, 0.5, 1)
 if(range_s == 0.1){
@@ -45,11 +37,8 @@ eta[[1]] <- sin(seq(0, pi, length.out = r1))
 eta[[2]] <- c(1, rep(0, r1 - 1))
 for(j in 3:(nlayers)) eta[[j]] <- runif(n = 1, min = -1, max = exp(3/2)/2)
 
-# spatial_grid <- expand.grid(seq(-1, 1, length.out = sqrt(n)),
-#                  seq(-1, 1, length.out = sqrt(n))) %>% as.matrix()
 
-
-x.coords <- seq(-1, sqrt(n)/10, , n)#x.0 + (1:(n - 1))*delta
+x.coords <- seq(-1, sqrt(n)/10, , n)#
 y.coords <- seq(-1, sqrt(n)/10, , n)#
 
 spatial_grid <- matrix(NA, ncol = 1, nrow = 1)
@@ -108,12 +97,12 @@ colnames(locs) <- c("x", "y", "time")
 locs <- locs %>% left_join(id.s1, by = c("x", "y"))
 setorderv(locs, c("id", "time"))
 
-# 计算空间距离和时间距离
+
 range(rdist(swarped[, 1:2]))
 range(rdist(twarped[, 1]))
 
-spatial_dist <- rdist(warped[,1:2])  # 空间距离
-time_dist    <- rdist(warped[,3])    # 时间距离
+spatial_dist <- rdist(warped[,1:2])  
+time_dist    <- rdist(warped[,3])    
 
 
 a          <- 0.1
@@ -124,36 +113,24 @@ sigma2     <- 1
 
 
 # if(stationary){
-  spatial_dist <- rdist(locs[,1:2])^2  # 空间距离
-  time_dist    <- rdist(locs[,3])^2       # 时间距离
+  spatial_dist <- rdist(locs[,1:2])^2  
+  time_dist    <- rdist(locs[,3])^2       
   term_1       <- 1 / (1 + ( time_dist^a / range_t ) )^b
   term_2       <- exp( - (spatial_dist * term_1)^c / range_s )
-  Cts.1          <- sigma2 * term_1 * term_2 # covariance matrix
+  Cts.1          <- sigma2 * term_1 * term_2 
   
   diag(Cts.1) <- diag(Cts.1) + 5E-2
   Qts.1       <- solve(Cts.1)
   
   
   
-  spatial_dist <- rdist(warped[,1:2])^2  # 空间距离
-  time_dist    <- rdist(warped[,3])^2       # 时间距离
+  spatial_dist <- rdist(warped[,1:2])^2  
+  time_dist    <- rdist(warped[,3])^2       
   term_1       <- 1 / (1 + ( time_dist^a / range_t ) )^b
   term_2       <- exp( - (spatial_dist * term_1)^c / range_s)
-  Cts          <- sigma2 * term_1 * term_2 # covariance matrix
+  Cts          <- sigma2 * term_1 * term_2 
 
 
-  
-  
-# }else{
-#   spatial_dist <- rdist(warped[,1:2])^2  # 空间距离
-#   time_dist    <- rdist(warped[,3])^2       # 时间距离
-#   term_1       <- 1 / (1 + ( time_dist^a / range_t ) )^b
-#   term_2       <- exp( - (spatial_dist * term_1)^c / range_s)
-#   Cts          <- sigma2 * term_1 * term_2 # covariance matrix
-# }
-
-# Cts <- time_cov*spatial_cov + diag(nrow(time_cov))*1E-1
-# Cts[1:20, 1:10]
 diag(Cts) <- diag(Cts) + 5E-2
 Qts       <- solve(Cts)
 K <- t(chol(Cts))

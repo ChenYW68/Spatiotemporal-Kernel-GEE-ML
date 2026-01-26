@@ -1,12 +1,7 @@
-# .rs.restartR()   # or restart R manually
-# gc()             # garbage collect
-# rm(list = ls())  # clear workspace
-# Sys.setenv(OMP_THREAD_LIMIT=1)
 source("./LoadPackages/RDependPackages.R")
 source("./R/spT.validation.R")
-source("./Simulation_Ux/Ux_sim_Data.R")
-source("./Simulation_Ux/Ux_Profile_GEE.R")
-# library(tensorflow)
+source("./R/Ux_sim_Data.R")
+source("./R/Ux_Profile_GEE.R")
 source("./ML/utils.R")
 n  <- 10
 Nt <- 10
@@ -16,25 +11,24 @@ load(paste0("./data/cov_",
             Nt, "_", n, "_", 
             tab, ".RData"))
 tab <- paste0("Est_Table3_", tab)
-# n      <- nrow(unique(locs[, 1:2]))
-# Nt     <- length((unique(locs[, 3])))
+
 set.seed(1234)
 
-ini.X <- 0#matrix(runif(n*Nt, 0, 1), nrow = Nt, ncol = n)
+ini.X <- 0
 ini.uts <- ini.X + matrix(runif(n*Nt, 0, 1), nrow = Nt, ncol = n)
 test.index <- sort(sample(1:n, ceiling(0.2*n), replace = FALSE))
 nThreads <- 50
 test.index
-# options(device = NULL)
+
 ######################################################a########
 h.range <- c(2E-2, 6e-2)            # minimum and maximum of bandwidth
 M      <- c("WI", "LLR", "LLRC", "WLLRC", "WLLR") # five methods for estimating function g(t)
-L      <- c(5)               # index of methods
-Kernel <- 3                     # 0. exponential kernel; 1. Bisperia Kernel; 3. Gaussian kernel
-nIter  <- 3                 # the number of iteration
-Neig0  <- ceiling(10.91 + 0.05*n*Nt)    #seq(2, Nt, by = 2)    # K value of K-nearest-weighted local linear regression (K-WLLR) only when K-WLLR is set
+L      <- c(5)               
+Kernel <- 3                   
+nIter  <- 3                
+Neig0  <- ceiling(10.91 + 0.05*n*Nt)    
 n.sim  <- 300           # the number of simulations
-# c(4, 6, Nt)#c(6, Nt)#, n*Nt
+
 
 Neig0
 
@@ -73,13 +67,7 @@ for(l in c(L)){ #1, 2, 3, 4, 5; 1, 4, 5
       set.seed(seed[n.k])
       para = list(
         beta = c(1, 1),
-        # sill = c(sigma.sq.s),
-        # scale_s = as.numeric(Phis),
-        # scale_t = as.numeric(Phit), # the smoothness in time: (0, 1]
-        # sep = 0.5, # space–time interaction: [0, 1]   0.5
-        # power_s = 3, #(0, 2]   0.1
-        # power_t = 0.5,         # >= 0   0.5
-        nugget = 5e-2  #0.1
+        nugget = 5e-2  
       )
       
       # if(iter == 1){
